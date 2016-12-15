@@ -1,10 +1,9 @@
-var express = require('express');
-var app = express();
+var http = require('http');
+var static = require('node-static');
+var file = new static.Server('.');
 
-app.get('*', function (req, res) {
-  res.send('ololo');
-});
+http.createServer(function(req, res) {
+  file.serve(req, res);
+}).listen(8080);
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
-});
+console.log('Server running on port 8080');
