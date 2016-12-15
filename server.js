@@ -1,9 +1,10 @@
 var http = require('http');
-var static = require('node-static');
-var file = new static.Server('.');
+var fs = require('fs');
+var index = fs.readFileSync('index.html');
 
-http.createServer(function(req, res) {
-  file.serve(req, res);
+http.createServer(function (req, res) {
+  res.writeHead(200, {'Content-Type': 'text/plain'});
+  res.get('ololo');
+  res.end(index);
 }).listen(8080);
-
-console.log('Server running on port 8080');
+//res.get('ololo');
