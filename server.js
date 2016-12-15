@@ -1,10 +1,10 @@
-var http = require('http');
-var fs = require('fs');
-var index = fs.readFileSync('index.html');
+var express = require('express');
+var app = express();
 
-http.createServer(function (req, res) {
-  res.writeHead(200, {'Content-Type': 'text/plain'});
-  res.get('ololo');
-  res.end(index);
-}).listen(8080);
-//res.get('ololo');
+app.get('/', function (req, res) {
+  res.send('Hello World!');
+});
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});
