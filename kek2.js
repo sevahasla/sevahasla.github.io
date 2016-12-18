@@ -24,17 +24,17 @@ function search() {
         part:['snippet','statistics'],
         order: 'viewCount',
         type: 'video',
-        maxResults:'4'
+        maxResults:'10'
     }).execute(function(response) {
        // console.log(response);
 
-        response.items.forEach(function(item,index,array) {
+        //было так response.items.forEach(function(item,index,array) {
 
-            var videoId = item.id.videoId;
+            var videoId = response.items.id.videoId;
             var iframe = createVideoIframe(videoId);
 
-            $( "div.game-container pravo" ).append( iframe );
-        });
+            $("div.videos").append(iframe);
+        //было так});
 
         // Getting vidoes stats
         var ids = response.items.map(function(item, index, array) {
