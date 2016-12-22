@@ -4,9 +4,10 @@ window.kek = function() {
         search();
     });
 }
- 
 
- var a='qwertyuiopasdfghjklzxcvbnm'.split('');
+var randomRight = Math.floor(Math.random()*25);
+var randomLeft = Math.floor(Math.random()*25);
+var a=/*'qwertyuiopasdfghjklzxcvbnm'.split('')*/['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'];
 Array.prototype.getRandomElement=function(){
     var random=Math.floor(Math.random()*this.length);
     return this[random];
@@ -16,6 +17,9 @@ var randomString= [1,2,3].map(function(){
 }).join();
 
 function search() {
+    var randomString= [1,2,3].map(function(){
+    return a.getRandomElement();
+}).join();
     var q = randomString;
     var videos;
     
@@ -24,35 +28,67 @@ function search() {
         part:['snippet','statistics'],
         order: 'viewCount',
         type: 'video',
-        maxResults:'10'
-    }).execute(function(response) {
-       // console.log(response);
+        maxResults:'25'
+    }).execute(processRequest1);
+}
+function processRequest1(response) {
+    var videoIdLeft = response.items[randomLeft].id.videoId;
+    var videoIdRight= response.items[randomRight].id.videoId;
+    var iframeRight = createVideoIframer(videoIdRight);
+    var iframeLeft = createVideoIframel(videoIdLeft);
 
-        //было так response.items.forEach(function(item,index,array) {
+    $("div.videosRight").append(iframeRight);
+    $("div.videosLeft").append(iframeLeft);
 
-            var videoId = response.items.id.videoId;
-            var iframe = createVideoIframe(videoId);
-
-            $("div.videos").append(iframe);
-        //было так});
-
-        // Getting vidoes stats
-        var ids = response.items.map(function(item, index, array) {
-            //var view = item.statistics.viewCount;
-            return item.id.videoId;
-        
-        });
-
-        gapi.client.youtube.videos.list({
-            id: ids.join(','),
-            part: 'statistics'
-        }).execute(function(response) {
-            console.info(response);
-        
-        });
+    // Getting vidoes stats
+    var ids = response.items.map(function(item, index, array) {
+        return item.id.videoId;
     });
+
+
+    gapi.client.youtube.videos.list({
+        id: ids.join(','),
+        part: 'statistics'
+    }).execute(processRequest2);
 }
 
-function createVideoIframe(videoId) {
-    return '<iframe width="420" height="315" src="https://www.youtube.com/embed/' + videoId + '"></iframe>';
+function processRequest2(response2) {
+    console.info(response2);
+    window.viewRight=response2.items[randomRight].statistics.viewCount;
+    window.viewLeft=response2.items[randomLeft].statistics.viewCount;   
+    console.log('LEFT:',viewLeft);
+    console.log('RIGHT:',viewRight);
 }
+
+function createVideoIframer(videoIdRight) {
+    return '<iframe width="420" height="315" src="https://www.youtube.com/embed/' + videoIdRight + '"></iframe>';
+}
+
+function createVideoIframel(videoIdLeft) {
+    return '<iframe width="420" height="315" src="https://www.youtube.com/embed/' + videoIdLeft + '"></iframe>';
+}
+ var  score = 0;
+function guesserRight(){
+   // console.log('RIGHT:',viewRight);
+    if(viewRight >= viewLeft){
+        score++;
+    }
+    else{
+        score=0;
+    }
+    $('span.scoreNumber').html(score);
+    search();
+}
+function guesserLeft(){
+   // console.log('LEFT:',viewLeft);
+    if(viewLeft >= viewRight){
+        score++;
+    }
+    else{
+        score=0;
+    }
+    $('span.scoreNumber').html(score);
+    search();
+}
+$('.rightButton').on('click', guesserRight);
+$('.leftButton').on('click', guesserLeft);
